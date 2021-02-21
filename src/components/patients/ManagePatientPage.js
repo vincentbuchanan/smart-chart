@@ -18,15 +18,17 @@ function ManagePatientPage({
     useEffect( () =>  {
 
         if (patients.length === 0) {
+          console.log("loadPatients from ManagePatientPage");
             loadPatients().catch(error => {
                 setErrors({error: "Loading Patients failed.",exception: error});
                 alert("Loading Patients failed " + error)
             });
+          
         }
-        else {
-          debugger;
+        else {          
           setPatient( { ...props.patient } );        
         }
+        console.log("patients[" +patients.length + "] loaded!");
 
     }, [props.patient]);
 
@@ -41,7 +43,6 @@ function ManagePatientPage({
     function handleSave(event) {
       event.preventDefault();
       savePatient(patient).then( () => {
-        debugger;
         history.push('/patients')
       });
     }

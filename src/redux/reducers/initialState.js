@@ -1,4 +1,6 @@
 export default {
     patients: [],
-    charts: []
+    patient: {},
+    charts: [],
+    chart: {}
 };

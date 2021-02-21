@@ -6,7 +6,7 @@ const PatientList = ({ patients }) => (
   <table className="table">
     <thead>
       <tr>
-        <th>Add Chart</th>
+        <th>Edit</th>
         <th>Patient Name</th>
         <th>Patient Reference</th>
         <th>Patient SSN</th>

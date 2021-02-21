@@ -12,6 +12,7 @@ const PatientForm = ({
   saving = false,
   errors = {}
 }) => {
+  console.log("from PatientForm");
   let sexes = [{ key:'M', text: "Male"}, { key: 'F', text:'Female'}];
   return (
     <form onSubmit={onSave}>

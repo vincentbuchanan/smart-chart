@@ -16,9 +16,8 @@ function App() {
         <Route exact path="/" component={HomePage} />
         <Route path="/about" component={AboutPage} />
         <Route path="/patients" component={PatientsPage} />
-        <Route path="/patient/:slug" component={ManagePatientPage} />
+        <Route path="/patient/:slug" component={ManagePatientPage} />                
         <Route path="/chart/:slug" component={ManageChartPage} />
-        <Route path="/patient" component={ManagePatientPage} />
         <Route component={PageNotFound} />
       </Switch>
     </div>

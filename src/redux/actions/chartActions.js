@@ -18,6 +18,7 @@ export function updateChartSuccess(chart) {
     return { type: types.UPDATE_CHART_SUCCESS, chart};
 }
 
+
 export function loadCharts() {
     return function (dispatch) {
         return chartApi

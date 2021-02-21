@@ -1,41 +1,50 @@
 import React, { useEffect, useState } from "react";
 import {connect} from 'react-redux';
-import { loadCharts, createChart, loadChartsSuccess, saveChart } from '../../redux/actions/chartActions';
 import PropTypes from 'prop-types';
 import ChartForm from "./ChartForm";
-import { newChart } from "../../../tools/mockData";
+import { loadPatients } from "../../redux/actions/patientActions";
+import {loadCharts, saveChart} from '../../redux/actions/chartActions';
+//import { chart} from "../../../tools/mockData";
+//import { newChart, patient } from "../../../tools/mockData";
 
 
-function ManageChartPage({ 
+function ManageChartPage({   
+  patient,
+  patients,
   charts, 
-  currentPatient,
+  loadPatients,
   loadCharts,
-  saveChart, 
-  history,
-  ...props
+  saveChart  
  })  {
-  const [ patient, setPatient] = useState(currentPatient);
-  const [ chart, setChart] = useState({});
-  const [ errors, setErrors] = useState({});
-    useEffect( () =>  {
+  const [ errors, setErrors] = useState({}); 
+  const [ chart, setChart]   = useState({});
+    useEffect( () =>  {        
+      if (patients.length === 0) {
+        console.log("loadPatients from ManageChartPage");
+        loadPatients().catch(error => {
+          setErrors({error: "Loading Patient failed.",exception: error});
+        })
+      } else {
+        //setPatient({ ...props.patient});
+        console.log("patients in useEffect " + patients.length);
+      }
 
-        if (charts.length === 0) {
-            loadCharts().catch(error => {
-                setErrors({error: "Loading Charts failed.",exception: error});
-                alert("Loading Charts failed " + error)
-            });
-        }
-        else {          
-          setChart( { ...props.chart } );        
-        }
-
-    }, [props.chart]);
+      if (charts.length === 0) {
+          console.log("loadChart from ManageChartPage");
+          loadCharts().catch(error => {
+              setErrors({error: "Loading Charts failed.",exception: error});
+          });
+      }
+      else {
+        console.log("charts in useEffect " + charts.length);
+      }        
+    }, []);
 
     function handleChange(event) {
       const { name, value } = event.target;
       setChart(prevChart => ({
         ...prevChart,
-        [name]: value
+        [name]: name === "duration" ? parseInt(value, 10) : value
       }));
     }
   
@@ -48,7 +57,8 @@ function ManageChartPage({
   
     return (<ChartForm
     patient={patient}
-    charts={charts}    
+    patients={patients}
+    charts={charts}            
     errors={errors}
     onChange={handleChange}
     onSave={handleSave} 
@@ -57,31 +67,64 @@ function ManageChartPage({
 
 }
 
-ManageChartPage.propTypes = {
-  currentPatient: PropTypes.object.isRequired,
+ManageChartPage.propTypes = {  
+  patient: PropTypes.object.isRequired,
   charts: PropTypes.array.isRequired,
+  patients: PropTypes.array.isRequired,
   loadCharts: PropTypes.func.isRequired, 
+  loadPatients: PropTypes.func.isRequired, 
   saveChart: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired
 };
 
 export function getPatientBySlug(patients, slug) {
-  return (patients && patients.length > 0 && patients.find(patient => patient.slug === slug)) || null;
+  if (patients && patients.length > 0) {
+    return patients.find(patient => patient.slug === slug);
+  }
+  else {
+    console.log("getPatientBySlug: " + slug + " returning {}");
+    return {};
+  }
+  
 }
 
-function mapStateToProps(state, ownProps) {
-  const slug = ownProps.match.params.slug;
-  debugger; 
-  const patient = getPatientBySlug(state.patients, slug);   
+// You could aument you find procedure to look for the (most recent Chart.)
+export function getChartBySlug(patients, charts, slug) {  
+  if (patients != undefined && patients != null) {
+    const p = patients.find(patient => patient.slug === slug);
+
+      if (charts != undefined && charts != null) {
+        const c = charts.filter( chart => chart.patientID === p.id);
+        return c[0];
+      }
+      else {
+        console.log("charts undefined in getChartBySlug()");
+      }
+
+  }
+  else {
+    console.log("patients undefined in getChartBySlug()");
+  }
+  return null;    
+  
+}
+// ownProps is a reference to the props being attached to this component.
+// its a reference to the components own props.
+function mapStateToProps(state, ownProps) {  
+  const slug = ownProps.match.params.slug;  
+  const patient = getPatientBySlug(state.patients, slug);  
+  //const chart = getChartBySlug(state.patients,state.charts, slug); 
   return {
-    currentPatient: patient,
-    charts: state.charts,
+    patient,
+    patients: state.patients.length === 0 ? [] : state.patients,
+    charts: state.charts
   };
 }
 
 const  mapDispatchToProps = {
-       loadCharts,
-       saveChart
+  loadPatients,
+  loadCharts,
+  saveChart
 };
 
 export default connect(

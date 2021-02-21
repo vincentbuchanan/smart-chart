@@ -1,4 +1,5 @@
 import React from "react";
+//import PatientCount from "./PatientCount";
 
 const AboutPage = () => (
   <div>
@@ -7,6 +8,7 @@ const AboutPage = () => (
       This app uses React, Redux, React Router, and many other helpful
       libraries.
     </p>
+    
   </div>
 );
 
